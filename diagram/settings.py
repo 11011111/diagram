@@ -83,8 +83,8 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'diagram_db',
-        'USER': 'diagram_db_user',
-        'PASSWORD': 'diagram_db_password',
+        'USER': 'diagram_user',
+        'PASSWORD': 'diagram_passsword',
         'HOST': 'localhost',
         'PORT': '54312',
     },
