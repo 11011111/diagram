@@ -27,6 +27,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'diagram.pages',
     'diagram.person',
+    'diagram.calculator',
     'rest_framework',
 ]
 

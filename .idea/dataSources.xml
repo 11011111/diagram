@@ -7,5 +7,11 @@
       <jdbc-driver>org.postgresql.Driver</jdbc-driver>
       <jdbc-url>jdbc:postgresql://localhost:54312/diagram_db</jdbc-url>
     </data-source>
+    <data-source source="LOCAL" name="diagram_db@localhost" uuid="3300ceae-e8c0-4641-9b3b-5ebf503ee97f">
+      <driver-ref>postgresql</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>org.postgresql.Driver</jdbc-driver>
+      <jdbc-url>jdbc:postgresql://localhost:54312/diagram_db</jdbc-url>
+    </data-source>
   </component>
 </project>

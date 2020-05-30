@@ -1,5 +1,6 @@
 from django.contrib.auth.models import AbstractUser, UserManager
-from django.db.models import CharField, OneToOneField, PROTECT, BooleanField, EmailField
+from django.db.models import CharField, OneToOneField, PROTECT, BooleanField, EmailField, DateField, FloatField, \
+    IntegerField
 from django.utils.translation import gettext_lazy as _
 
 from diagram.utils.model_mixins import BaseModelMixin
@@ -46,8 +47,7 @@ class User(AbstractUser, BaseModelMixin):
     # Поля имя и фамилии переносятся в модель Person
     first_name = None
     last_name = None
-    # username пока не используется
-    username = CharField(_('username'), max_length=30, blank=True, null=True)
+    username = None
 
     def __str__(self):
         return self.email
@@ -58,10 +58,30 @@ class User(AbstractUser, BaseModelMixin):
 
 
 class Person(BaseModelMixin):
-    native_lang = CharField('Родной язык', max_length=50, default='', blank=True)
     first_name = CharField('Имя', max_length=50)
     last_name = CharField('Фамилия', max_length=50, default='', blank=True)
     user = OneToOneField(User, verbose_name='Пользователь', on_delete=PROTECT, related_name='person')
+
+    birthday = DateField(null=True, blank=True)
+
+    MALE = 'm'
+    FEMALE = 'w'
+
+    GENDERS = (
+        (MALE, 'Мужской'),
+        (FEMALE, 'Женский'),
+    )
+    gender = CharField(max_length=1, choices=GENDERS, null=True, blank=True)
+
+    weight = FloatField(null=True, blank=True)
+    height = IntegerField(null=True, blank=True)
+
+    ddi = FloatField(null=True, blank=True)
+
+    coeff_morning = FloatField(null=True, blank=True)
+    coeff_day = FloatField(null=True, blank=True)
+    coeff_evening = FloatField(null=True, blank=True)
+    coeff_night = FloatField(null=True, blank=True)
 
     @property
     def full_name(self):
@@ -74,22 +94,3 @@ class Person(BaseModelMixin):
     class Meta:
         verbose_name = _('Персона')
         verbose_name_plural = _('Персоны')
-
-
-class Settings(BaseModelMixin):
-    RU = 'ru'
-    EN = 'en'
-    DE = 'de'
-    FI = 'fi'
-    LANGUAGES = (
-        (RU, "Русский"),
-        (EN, "English"),
-        (DE, "Deutsche"),
-        (FI, "Suomi")
-    )
-    language = CharField('Язык интерфейса', max_length=2, choices=LANGUAGES, default=RU)
-    user = OneToOneField(User, on_delete=PROTECT, related_name='settings')
-
-    class Meta:
-        verbose_name = _('Настройки пользователя')
-        verbose_name_plural = _('Настройки пользователей')
