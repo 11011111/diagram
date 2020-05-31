@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from django.contrib.auth.models import AbstractUser, UserManager
 from django.db.models import CharField, OneToOneField, PROTECT, BooleanField, EmailField, DateField, FloatField, \
     IntegerField
@@ -60,7 +62,7 @@ class User(AbstractUser, BaseModelMixin):
 class Person(BaseModelMixin):
     first_name = CharField('Имя', max_length=50)
     last_name = CharField('Фамилия', max_length=50, default='', blank=True)
-    user = OneToOneField(User, verbose_name='Пользователь', on_delete=PROTECT, related_name='person')
+    user = OneToOneField(User, verbose_name='Пользователь', on_delete=PROTECT, related_name='person', null=True, blank=True )
 
     birthday = DateField(null=True, blank=True)
 
@@ -76,12 +78,37 @@ class Person(BaseModelMixin):
     weight = FloatField(null=True, blank=True)
     height = IntegerField(null=True, blank=True)
 
-    ddi = FloatField(null=True, blank=True)
+    ddi = FloatField('Суточная доза инсулина', null=True, blank=True)
 
-    coeff_morning = FloatField(null=True, blank=True)
-    coeff_day = FloatField(null=True, blank=True)
-    coeff_evening = FloatField(null=True, blank=True)
-    coeff_night = FloatField(null=True, blank=True)
+    @property
+    def ddi_coef(self):
+        """Углеводный коэффициент"""
+        return 12 * self.ddi / 500
+
+    coeff_morning = FloatField('Утренний коэффициент', null=True, blank=True)
+    coeff_day = FloatField('Дневной коэффициент', null=True, blank=True)
+    coeff_evening = FloatField('Вечерний коэффициент', null=True, blank=True)
+    coeff_night = FloatField('Ночной коэффициент', null=True, blank=True)
+
+    def coeff_on_hour(self, hour):
+        hour_now = hour
+        times = (
+            (0, 5, self.coeff_night,),
+            (6, 11, self.coeff_morning,),
+            (12, 17, self.coeff_day,),
+            (18, 23, self.coeff_evening,),
+        )
+        for dt in times:
+            if hour_now in range(dt[0], dt[1]+1):
+                return dt[2]
+
+    @property
+    def sensitivity_coeff(self):
+        return 83/self.ddi
+
+    @property
+    def now_coeff(self):
+        return self.coeff_on_hour(datetime.now().time().hour)
 
     @property
     def full_name(self):
@@ -90,6 +117,9 @@ class Person(BaseModelMixin):
     @property
     def short_name(self):
         return f'{self.first_name} {self.last_name[0]}.'
+
+    def __str__(self):
+        return f'{self.full_name}'
 
     class Meta:
         verbose_name = _('Персона')
