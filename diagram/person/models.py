@@ -90,8 +90,8 @@ class Person(BaseModelMixin):
     coeff_evening = FloatField('Вечерний коэффициент', null=True, blank=True)
     coeff_night = FloatField('Ночной коэффициент', null=True, blank=True)
 
-    def coeff_on_hour(self, hour):
-        hour_now = hour
+    def coeff_on_hour(self, hour_now):
+        """Возврат коэффициент на час в сутках"""
         times = (
             (0, 5, self.coeff_night,),
             (6, 11, self.coeff_morning,),

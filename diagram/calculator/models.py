@@ -14,6 +14,7 @@ class Record(BaseModelMixin):
 
     @property
     def sum_he(self):
+        """Сумма хлебных едениц съеденных продуктов"""
         return sum([food_intake.he for food_intake in self.food_intakes.all()])
 
     @property
@@ -35,6 +36,7 @@ class Eated(BaseModelMixin):
 
     @property
     def he(self):
+        """Расчет хлебных едениц на вес"""
         return round(self.food.ch * self.weight / 100 / 12, 1)
 
     def __str__(self):
